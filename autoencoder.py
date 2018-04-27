@@ -6,6 +6,8 @@ from keras.layers import Input, Dense
 from keras.models import Model
 from keras.datasets import mnist
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt # plot digits
 from keras.callbacks import TensorBoard # for logging
 from sklearn import svm
@@ -13,7 +15,6 @@ from sklearn import cross_validation, grid_search
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.externals import joblib
 from sklearn.svm import SVC
-
 np.set_printoptions(threshold=np.inf)
 
 # size of our encoded representation
