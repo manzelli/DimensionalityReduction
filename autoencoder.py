@@ -7,7 +7,7 @@ from keras.models import Model
 from keras.datasets import mnist
 import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt # plot digits
 from keras.callbacks import TensorBoard # for logging
 from sklearn import svm
