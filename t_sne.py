@@ -1,8 +1,9 @@
 import time
 import numpy as np
 import sklearn
+from multiprocessing import cpu_count
 from sklearn.datasets import fetch_mldata
-from sklearn.manifold import TSNE
+from MulticoreTSNE import MulticoreTSNE as TSNE
 from svm_classify import *
 import pandas as pd
 import matplotlib
@@ -18,8 +19,9 @@ def t_sne(dataframe, samplefactor=.1, components=2, verbose=1, n_iter=300):
 	numsamples = int(dataframe.shape[0] * samplefactor)
 	randperm = np.random.permutation(dataframe.shape[0])
 	time_start = time.time()
-	tsne = TSNE(n_components=components, verbose=verbose, n_iter=n_iter)
-	tsne_results = tsne.fit_transform(dataframe.loc[randperm[:numsamples], dataframe.columns].values)
+	TSNE(n_components=components, verbose=verbose, n_iter=n_iter, n_jobs=8)
+	tsne = TSNE(n_jobs=int(8), verbose=1, n_components=components, random_state=660)
+	tsne_results = tsne.fit_transform(dataframe)
 
 	df_tsne = dataframe.loc[randperm[:numsamples], :].copy()
 	df_tsne['xtsne'] = tsne_results[:, 0]
@@ -48,7 +50,7 @@ def main():
 	x = None
 
 	# Performing t-SNE dimensionality reduction & graphing reduced dimensions with their original labels
-	tsne_results, dataframe_tsne = t_sne(df, samplefactor=.5, components=2, verbose=1, n_iter=500)
+	tsne_results, dataframe_tsne = t_sne(df, samplefactor=1, components=2, verbose=1, n_iter=500)
 
 	# Visualise_results(dataframe_tsne)
 	x1 = tsne_results[:, 0]
