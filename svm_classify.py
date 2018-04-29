@@ -1,33 +1,43 @@
-from sklearn import cross_validation, grid_search
+import os
+import sys
+import time
+import glob
+import datetime
+from sklearn import *
+from sklearn import model_selection
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.externals import joblib
 import numpy as np
-from sklearn.svm import SVC
 
 
 def svm_classify(features, labels, printout=True):
-	train_feat, test_feat, train_lbl, test_lbl = cross_validation.train_test_split(features, labels, test_size=0.2)
+	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
 
-	c_vals = [10^ element for element in [-3, -2, -1, 0, 1, 2, 3, 4, 5]]
 	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
-	params= [
+	best_params = {
+		"kernel": ["rbf"],
+		"C"		: [10],
+		"gamma" : [10]
+	}
+
+	params = [
 		{
 			"kernel": ["linear"],
-			"C"     : c_vals
+			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
 		},
 		{
 			"kernel": ["rbf"],
-			"C"     : c_vals,
-			"gamma" : g_vals
+			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
+			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
 		}
 	]
 
 	# Turn off probability estimation, set decision function to One Versus One
-	svm = SVC(probability=False, decision_function_shape='ovo')
 
-	# 10-fold cross validation, use 4 thread as each fold and each parameter set can be train in parallel
-	clf = grid_search.GridSearchCV(svm, params, cv=10, n_jobs=4, verbose=3)
+	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=8192)
+
+	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
+	clf = model_selection.GridSearchCV(classifier, params, cv=10, n_jobs=8, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
 	# Testing on classifier..
