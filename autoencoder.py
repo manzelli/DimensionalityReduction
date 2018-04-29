@@ -6,8 +6,6 @@ from keras.layers import Input, Dense
 from keras.models import Model
 from keras.datasets import mnist
 import numpy as np
-import matplotlib
-matplotlib.use('agg',warn=False, force=True)
 import matplotlib.pyplot as plt # plot digits
 from keras.callbacks import TensorBoard # for logging
 from sklearn import svm
@@ -15,6 +13,8 @@ from sklearn import cross_validation, grid_search
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.externals import joblib
 from sklearn.svm import SVC
+from sklearn import preprocessing
+
 np.set_printoptions(threshold=np.inf)
 
 # size of our encoded representation
@@ -66,9 +66,16 @@ autoencoder.fit(x_train, x_train,
 # encode and decode some digits from test set
 encoded_test = encoder.predict(x_test) # 0-9
 encoded_train = encoder.predict(x_train)
+
+# normalize each feature to increase probability of convergence :)
+encoded_train = preprocessing.normalize(encoded_train)
+encoded_test = preprocessing.normalize(encoded_test)
+
+# print(encoded_train)
 print(encoded_train.shape)
 print(encoded_test.shape)
-decoded_imgs = decoder.predict(encoded_test)
+
+# decoded_imgs = decoder.predict(encoded_test) we don't need this 
 
 # CLASSIFY 
 param = [
