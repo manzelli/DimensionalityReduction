@@ -19,7 +19,7 @@ ytrain = mnisttrain['label']
 
 n_components = 16
 time_start = time.time()
-kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf', gamma = gamma, n_jobs = -1).fit(xtrain)
+kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf', gamma = 10, n_jobs = -1).fit(xtrain)
 time_end = time.time()
 print("done in %0.3fs" % (time.time() - time_start))
 x_kpca = kpca.transform(xtrain); 
