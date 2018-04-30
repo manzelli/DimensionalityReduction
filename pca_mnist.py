@@ -10,7 +10,7 @@ from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
-from svm_classify import * 
+from svm_classify_pca import * 
 from sklearn.datasets import fetch_mldata
 
 import math
