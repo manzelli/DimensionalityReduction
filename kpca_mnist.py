@@ -6,12 +6,11 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 import time
+from kpca import *
+from svm_classify_kpca import *
 from sklearn.decomposition import PCA, KernelPCA
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVC
-from svm_classify_kpca import * 
 from sklearn.datasets import fetch_mldata
+from sklearn import model_selection
 
 import math
 
@@ -20,16 +19,14 @@ xtrain = mnist.data / 255.0
 ytrain = mnist.target
 
 
-n_components = 2
+n_components = 16
 time_start = time.time()
-for x in range (0,10):
-    kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform = True ,gamma = x).fit(xtrain)
-    time_end = time.time()
-    print("done in %0.3fs" % (time.time() - time_start))
-    pca.explained_variance_ratio_.sum() 
-    xtrain_pca = kpca.transform(xtrain)
-    print(xtrain_pca.shape)
-    svm_classify(xtrain_pca,ytrain)
+kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf', gamma = gamma, n_jobs = -1).fit(xtrain)
+time_end = time.time()
+print("done in %0.3fs" % (time.time() - time_start))
+x_kpca = kpca.transform(xtrain); 
+print(x_kpca.shape)
+svm_classify(x_kpca,ytrain)
 
 
 
