@@ -78,23 +78,25 @@ print(encoded_test.shape)
 # decoded_imgs = decoder.predict(encoded_test) we don't need this 
 
 # CLASSIFY 
-param = [
-    {
-        "kernel": ["linear"],
-        "C"     : [1, 10, 100, 1000]
-    },
-    {
-        "kernel": ["rbf"],
-        "C"     : [1, 10, 100, 1000],
-        "gamma" : [1e-2, 1e-3, 1e-4, 1e-5]
-    }
-]
+#param = [
+#    {
+#        "kernel": ["linear"],
+#        "C"     : [1, 10, 100, 1000]
+#    },
+#    {
+#        "kernel": ["rbf"],
+#        "C"     : [1, 10, 100, 1000],
+#        "gamma" : [1e-2, 1e-3, 1e-4, 1e-5]
+#    }
+#]
+
+param = [{"kernel": ["rbf"], "C": [1000], "gamma": [0.01]}]
 
 # Turn off probability estimation, set decision function to One Versus One
-svm = SVC(probability=False, decision_function_shape='ovo')
+svm = SVC(probability=False, decision_function_shape='ovo', cache_size=71680)
 
 # 10-fold cross validation, use 4 thread as each fold and each parameter set can be train in parallel
-clf = grid_search.GridSearchCV(svm, param, cv=10, n_jobs=4, verbose=3)
+clf = grid_search.GridSearchCV(svm, param, cv=5, n_jobs=4, verbose=3)
 clf.fit(encoded_train, train_labels)
 
 print("\nBest parameters set:")
@@ -103,7 +105,11 @@ print(clf.best_params_)
 # Testing on classifier..
 y_predict = clf.predict(encoded_test)
 
-labels_sort = sorted(list(set(train_labels)))
+# labels_sort = ','.join(map(str, train_labels))
+
+# labels_sort = sorted(list(set(labels_sort)))
+
+labels_sort = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 print("\nConfusion matrix:")
 print("Labels: {0}\n".format(",".join(labels_sort)))
 print(confusion_matrix(test_labels, y_predict, labels=labels_sort))
@@ -120,23 +126,23 @@ print(classification_report(test_labels, y_predict))
 # print(CCR)
 
 # Plots
-# n = 10  # how many digits we will display
-# plt.figure(figsize=(20, 4))
-# for i in range(n):
-#     # display original
-#     ax = plt.subplot(2, n, i + 1)
-#     plt.imshow(x_test[i].reshape(28, 28))
-#     plt.gray()
-#     ax.get_xaxis().set_visible(False)
-#     ax.get_yaxis().set_visible(False)
+n = 10  # how many digits we will display
+plt.figure(figsize=(20, 4))
+for i in range(n):
+    # display original
+    ax = plt.subplot(2, n, i + 1)
+    plt.imshow(x_test[i].reshape(28, 28))
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
 
-#     # display reconstruction
-#     ax = plt.subplot(2, n, i + 1 + n)
-#     plt.imshow(decoded_imgs[i].reshape(28, 28))
-#     plt.gray()
-#     ax.get_xaxis().set_visible(False)
-#     ax.get_yaxis().set_visible(False)
-# plt.show()
+    # display reconstruction
+    ax = plt.subplot(2, n, i + 1 + n)
+    plt.imshow(decoded_imgs[i].reshape(28, 28))
+    plt.gray()
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+plt.show()
 
 # n = 10
 # plt.figure(figsize=(20, 8))
