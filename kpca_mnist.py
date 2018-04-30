@@ -14,10 +14,9 @@ from sklearn import model_selection
 
 import math
 
-mnist = fetch_mldata("MNIST original")
-xtrain = mnist.data / 255.0
-ytrain = mnist.target
-
+mnisttrain = pd.read_csv('../mnistdata/train.csv')
+xtrain = mnisttrain.drop(['label'], axis='columns', inplace=False)
+ytrain = mnisttrain['label']
 
 n_components = 16
 time_start = time.time()
