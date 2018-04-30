@@ -6,35 +6,33 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 import time
-from svm_classify_kpca import *
 from sklearn.decomposition import PCA, KernelPCA
-from sklearn.datasets import fetch_mldata
-from sklearn import model_selection
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+from svm_classify_pca import * 
+from cifar_10 import *
 
 import math
 
-mnisttrain = pd.read_csv('./mnistdata/train.csv')
-xtrain = mnisttrain.drop(['label'], axis='columns', inplace=False)
-ytrain = mnisttrain['label']
-xtrain = xtrain / 255.0
+xtrain,labels,filenames,label_names = get_cifar()
 
 n_components = 16
 time_start = time.time()
-#xtrain, xtest, ytrain, ytest= model_selection.train_test_split(xtrain, ytrain, test_size=0.)
 kpca = KernelPCA(n_components = n_components, kernel = 'rbf')
-time_end = time.time()
-print("done in %0.3fs" % (time.time() - time_start))
 
 import pickle
 # obj0, obj1, obj2 are created here...
 x_kpca = kpca.fit_transform(xtrain);
-
+time_end = time.time()
+print("done in %0.3fs" % (time.time() - time_start))
 # Saving the objects:
 with open('x_kpca.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
     pickle.dump([x_kpca], f)
 
-    
 print(x_kpca.shape)
 svm_classify(x_kpca,ytrain)
+
+
 
 
