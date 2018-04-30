@@ -20,7 +20,7 @@ xtrain = mnist.data / 255.0
 ytrain = mnist.target
 
 
-n_components = 16
+n_components = 2
 time_start = time.time()
 for x in range (0,10):
     kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform = True ,gamma = x).fit(xtrain)
