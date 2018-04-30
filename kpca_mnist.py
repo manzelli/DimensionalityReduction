@@ -19,10 +19,11 @@ ytrain = mnisttrain['label']
 
 n_components = 16
 time_start = time.time()
-kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf', gamma = 10, n_jobs = -1).fit(xtrain)
+#xtrain, xtest, ytrain, ytest= model_selection.train_test_split(xtrain, ytrain, test_size=0.8)
+kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform=True,gamma=10)
 time_end = time.time()
 print("done in %0.3fs" % (time.time() - time_start))
-x_kpca = kpca.transform(xtrain); 
+x_kpca = kpca.fit_transform(xtrain); 
 print(x_kpca.shape)
 svm_classify(x_kpca,ytrain)
 
