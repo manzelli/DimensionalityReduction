@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 import time
-from kpca import *
 from svm_classify_kpca import *
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.datasets import fetch_mldata
