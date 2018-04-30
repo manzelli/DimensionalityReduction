@@ -44,7 +44,7 @@ decoder_layer = autoencoder.layers[-1]
 decoder = Model(encoded_input, decoder_layer(encoded_input))
 
 # Configure model using adadelta optimizer for gradients and cross entropy loss function
-autoencoder.compile(optimizer='rmsprop', loss='binary_crossentropy')
+autoencoder.compile(optimizer='rmsprop', loss='mean_squared_error')
 
 ### DATA PREPROCESS ###
 (x_train, train_labels), (x_test, test_labels) = mnist.load_data()
@@ -75,7 +75,7 @@ encoded_test = preprocessing.normalize(encoded_test)
 print(encoded_train.shape)
 print(encoded_test.shape)
 
-# decoded_imgs = decoder.predict(encoded_test) we don't need this 
+decoded_imgs = decoder.predict(encoded_test) 
 
 # CLASSIFY 
 #param = [
@@ -105,13 +105,16 @@ print(clf.best_params_)
 # Testing on classifier..
 y_predict = clf.predict(encoded_test)
 
+print(type(y_predict))
 # labels_sort = ','.join(map(str, train_labels))
 
-# labels_sort = sorted(list(set(labels_sort)))
+labels_sort = sorted(list(set(test_labels)))
 
-labels_sort = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+# labels_sort = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+#labels_sort = np.array([0,1,2,3,4,5,6,7,8,9])
 print("\nConfusion matrix:")
-print("Labels: {0}\n".format(",".join(labels_sort)))
+print("Labels: {0}\n".format(",".join(str(labels_sort))))
 print(confusion_matrix(test_labels, y_predict, labels=labels_sort))
 
 print("\nClassification report:")
