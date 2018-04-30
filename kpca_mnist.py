@@ -13,7 +13,7 @@ from sklearn import model_selection
 
 import math
 
-mnisttrain = pd.read_csv('../mnistdata/train.csv')
+mnisttrain = pd.read_csv('./mnistdata/train.csv')
 xtrain = mnisttrain.drop(['label'], axis='columns', inplace=False)
 ytrain = mnisttrain['label']
 
