@@ -24,13 +24,14 @@ ytrain = mnist.target
 n_components = 16
 time_start = time.time()
 pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
-#kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform = True ,gamma = 10).fit(xtrain)
+# kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform = True ,gamma = 10).fit(xtrain)
 time_end = time.time()
 print("done in %0.3fs" % (time.time() - time_start))
 pca.explained_variance_ratio_.sum() 
 
 xtrain_pca = pca.transform(xtrain)
-xtrain_kpca = kpca.transform(xtrain)
+print(xtrain_pca.shape)
+# xtrain_kpca = kpca.transform(xtrain)
 
 svm_classify(xtrain_pca,ytrain)
 # param = {"C" : [0.1], "gamma":[0.1]}
