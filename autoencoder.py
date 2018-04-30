@@ -105,9 +105,11 @@ print(clf.best_params_)
 # Testing on classifier..
 y_predict = clf.predict(encoded_test)
 
-labels_sort = ','.join(map(str, train_labels))
+# labels_sort = ','.join(map(str, train_labels))
 
-labels_sort = sorted(list(set(labels_sort)))
+# labels_sort = sorted(list(set(labels_sort)))
+
+labels_sort = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 print("\nConfusion matrix:")
 print("Labels: {0}\n".format(",".join(labels_sort)))
 print(confusion_matrix(test_labels, y_predict, labels=labels_sort))
