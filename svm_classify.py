@@ -34,10 +34,10 @@ def svm_classify(features, labels, printout=True):
 
 	# Turn off probability estimation, set decision function to One Versus One
 
-	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=31260)
+	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, params, cv=10, n_jobs=8, verbose=3)
+	clf = model_selection.GridSearchCV(classifier, params, cv=5, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
 	# Testing on classifier..
