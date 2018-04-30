@@ -20,13 +20,13 @@ def get_cifar():
 	data_filenames.append(cifar_path + '/' + test_name)
 	first = unpickle(data_filenames[0])
 	data = first[b'data']
-	labels = first[b'labels']
-	filenames = first[b'filenames']
-	label_names = (unpickle(cifar_path + '/' + meta))[b'label_names']
+	labels = np.array(first[b'labels'])
+	filenames = np.array(first[b'filenames'])
+	label_names = np.array((unpickle(cifar_path + '/' + meta))[b'label_names'])
 	data_filenames.pop(0)
 	for file in data_filenames:
 		file_dict = unpickle(file)
 		data = np.vstack((data, file_dict[b'data']))
-		labels = np.vstack((labels, file_dict[b'labels']))
-		filenames = np.vstack((filenames, file_dict[b'filenames']))
+		labels = np.append(labels, file_dict[b'labels'], 0)
+		filenames = np.append(filenames, file_dict[b'filenames'], 0)
 	return data, labels, filenames, label_names

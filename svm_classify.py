@@ -9,10 +9,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
 
 
-def svm_classify(features, labels, printout=True):
-	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
-
-	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
+def svm_classify(features, labels, printout=True, test_ratio=0.2):
+	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=test_ratio)
 
 	best_params = {
 		"kernel": ["rbf"],
