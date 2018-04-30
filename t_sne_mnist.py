@@ -19,7 +19,7 @@ def t_sne(dataframe, samplefactor=.1, components=2, verbose=1, n_iter=300):
 	numsamples = int(dataframe.shape[0] * samplefactor)
 	randperm = np.random.permutation(dataframe.shape[0])
 	time_start = time.time()
-	TSNE(n_components=components, verbose=verbose, n_iter=n_iter, n_jobs=8)
+	TSNE(n_components=components, verbose=verbose, n_iter=n_iter, n_jobs=35)
 	tsne = TSNE(n_jobs=int(8), verbose=1, n_components=components, random_state=660)
 	tsne_results = tsne.fit_transform(dataframe)
 
