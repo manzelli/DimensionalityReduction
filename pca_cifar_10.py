@@ -4,36 +4,89 @@ import pandas as pd
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib
+import os
+import sys
+import time
+import glob
+import datetime
 
+from sklearn import *
+from sklearn.metrics import confusion_matrix, classification_report
 import time
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
-from svm_classify_pca import * 
 from cifar_10 import *
 
 import math
 
-xtrain,labels,filenames,label_names = get_cifar()
-xtrain = mnist.data / 255.0
-ytrain = mnist.target
+def svm_classify(features, labels, printout=True):
+	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
 
-# X_tr, X_ts, Y_tr, Y_ts = train_test_split(xtrain,ytrain,test_size=0.30,random_state=4)
+	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
-n_components = 16
-time_start = time.time()
-pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
-# kpca = KernelPCA(n_components = n_components, kernel = 'rbf',fit_inverse_transform = True ,gamma = 10).fit(xtrain)
-time_end = time.time()
-print("done in %0.3fs" % (time.time() - time_start))
-pca.explained_variance_ratio_.sum() 
+	best_params = {
+		"kernel": ["rbf"],
+		"C"		: [1],
+		"gamma" : [0.1]
+	}
 
-xtrain_pca = pca.transform(xtrain)
-print(xtrain_pca.shape)
-# xtrain_kpca = kpca.transform(xtrain)
+	params = [
+		{
+			"kernel": ["linear"],
+			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
+		},
+		{
+			"kernel": ["rbf"],
+			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
+			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
+		}
+	]
 
-svm_classify(xtrain_pca,ytrain)
+	# Turn off probability estimation, set decision function to One Versus One
+
+	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
+
+	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
+	clf = model_selection.GridSearchCV(classifier, best_params, cv=2, n_jobs=36, verbose=3)
+	clf.fit(train_feat, train_lbl)
+
+	# Testing on classifier..
+	y_predict = clf.predict(test_feat)
+
+	if printout:
+		print("\nBest parameters set:")
+		print(clf.best_params_)
+
+		labels_sort = sorted(list(set(labels)))
+		print("\nConfusion matrix:")
+		print("Labels: {0}\n".format(", ".join(str(labels_sort))))
+		print(confusion_matrix(test_lbl, y_predict, labels=labels_sort))
+
+		print("\nClassification report (per label):")
+		print(classification_report(test_lbl, y_predict))
+
+	return clf, y_predict
+
+def main():
+    xtrain,ytrain,filenames,label_names = get_cifar()
+    print(label_names)
+
+    n_components = 16
+    time_start = time.time()
+    pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
+    time_end = time.time()
+    print("done in %0.3fs" % (time.time() - time_start))
+    pca.explained_variance_ratio_.sum()
+    
+    xtrain_pca = pca.transform(xtrain)
+    train = pd.DataFrame(xtrain)
+
+    svm_classify(xtrain_pca,ytrain)
+
+if __name__ == '__main__':
+    main()
 
 
 

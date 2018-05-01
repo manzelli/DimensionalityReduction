@@ -4,7 +4,7 @@ import os
 import glob
 import numpy as np
 
-cifar_path = '/home/ubuntu/cifar_10'
+cifar_path = '/Users/sshong/Desktop/EC503_Project/DimensionalityReduction/cifar_10'
 train_names = 'data_batch'
 test_name = 'test_batch'
 meta = 'batches.meta'
