@@ -111,7 +111,7 @@ def main():
     plt.savefig('./pca_results/pca_cifar_10.png')
     svm_classify(xtrain_pca,ytrain)
 
-    message = client.messages.create(body = "Hello Good News! Your KPCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
+    message = client.messages.create(body = "Hello Good News! Your PCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
     print(message.sid)
 
 if __name__ == '__main__':

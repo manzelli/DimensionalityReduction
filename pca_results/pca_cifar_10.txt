@@ -1,7 +1,7 @@
-[b'airplane' b'automobile' b'bird' b'cat' b'deer' b'dog' b'frog' b'horse'
- b'ship' b'truck']
-done in 12.457s
-Fitting 2 folds for each of 64 candidates, totalling 128 fits
+nohup: ignoring input
+(60000, 3072)
+done in 39.798s
+Fitting 2 folds for each of 56 candidates, totalling 112 fits
 /usr/local/lib/python3.5/dist-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
   "This module will be removed in 0.20.", DeprecationWarning)
 /usr/local/lib/python3.5/dist-packages/sklearn/grid_search.py:42: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. This module will be removed in 0.20.
