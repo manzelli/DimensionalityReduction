@@ -19,6 +19,11 @@ from sklearn.svm import SVC
 from sklearn.datasets import fetch_mldata
 
 import math
+from twilio.rest import Client
+
+account_sid = '"AC023932c0bf9cd98ededdcd5142032db0"'
+auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
+client = Client(account_sid,auth_token)
 
 def plot_number(row, w=28, h=28, labels=True):
     if labels:
@@ -133,6 +138,9 @@ def main():
     plt.savefig('./pca_results/pca_mnist.png')
     svm_classify(xtrain_pca,ytrain, printout = True)
     plt.savefig('./pca_results/gridsearch_rbf_pca_mnist.png')
+
+    message = client.messages.create(body = "Hello Good News! Your PCA MNIST is done!",from_="+19733213685",to="+19173707991")
+    print(message.sid)
 
 if __name__ == '__main__':
     main()
