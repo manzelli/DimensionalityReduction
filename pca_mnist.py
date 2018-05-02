@@ -88,9 +88,9 @@ def svm_classify(features, labels, printout=True):
 	
 	plt.figure()
 	for ind, i in enumerate(kernel_params["C"]):
-		plt.plot(kernel_params["gamma"], scores[ind], label = 'C: ' + str(i))
+		plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = 'C: ' + str(i))
 	plt.legend()
-	plt.xlabel('Gamma')
+	plt.xlabel('Log-scaled Gamma')
 	plt.ylabel('Mean Score')
 
 	# Testing on classifier..
