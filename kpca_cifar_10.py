@@ -1,5 +1,10 @@
 import numpy as numpy
 import pandas as pd 
+import pickle
+import sys
+import os
+import glob 
+import numpy as np
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -9,12 +14,11 @@ import time
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVC
-from svm_classify_kpca import * 
+from sklearn.svm import SVC 
 import math
 
-cifar_path = '/Users/sshong/Desktop/EC503_Project/DimensionalityReduction/cifar_10'
-train_names = 'data_batch_1'
+cifar_path = '/home/ubuntu/DimensionalityReduction/cifar_10'
+train_names = 'data_batch'
 test_name = 'test_batch'
 meta = 'batches.meta'
 
@@ -25,7 +29,7 @@ def unpickle(file):
 	return dict
 
 def get_cifar():
-	data_filenames = glob.glob(cifar_path + '/' + train_names)
+	data_filenames = glob.glob(cifar_path + '/' + train_names + '*')
 	data_filenames.append(cifar_path + '/' + test_name)
 	first = unpickle(data_filenames[0])
 	data = first[b'data']

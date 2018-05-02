@@ -1,9 +1,11 @@
 import numpy as numpy
 import pandas as pd 
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import matplotlib
+
 import os
 import sys
 import time
@@ -49,9 +51,27 @@ def svm_classify(features, labels, printout=True):
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, best_params, cv=2, n_jobs=36, verbose=3)
+	clf = model_selection.GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
+	scores = [x[1] for x in clf.grid_scores_]
+	scores = np.array(scores).reshape(len(params[0]["C"]))
+	
+	for ind in enumerate(params[0]["C"]):
+                plt.plot(params[0]["C"], scores[ind])
+	plt.xlabel('C')
+	plt.ylabel('Mean Score')
+	plt.savefig('./pca_results/GridSearch_pca_cifar_10.png')
+	
+	scores = [x[1] for x in clf.grid_scores_]
+	scores = np.array(scores).reshape(len(params[1]["C"]),len(params[1]["gamma"]))
+
+	for ind, i in enumerate(params[1]["C"]):
+		plt.plot(params[1]["Gamma"], scores[ind], label = 'C: ' + str(i))
+	plt.legend()
+	plt.xlabel('Gamma')
+	plt.ylabel('Mean Score')
+	plt.savefig('./pca_results/GridSearch_rbf_pca_cifar_10.png')
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
 

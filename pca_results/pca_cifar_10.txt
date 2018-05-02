@@ -1,0 +1,25 @@
+[b'airplane' b'automobile' b'bird' b'cat' b'deer' b'dog' b'frog' b'horse'
+ b'ship' b'truck']
+done in 12.283s
+Fitting 2 folds for each of 64 candidates, totalling 128 fits
+/usr/local/lib/python3.5/dist-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+  "This module will be removed in 0.20.", DeprecationWarning)
+/usr/local/lib/python3.5/dist-packages/sklearn/grid_search.py:42: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. This module will be removed in 0.20.
+  DeprecationWarning)
+/usr/local/lib/python3.5/dist-packages/sklearn/learning_curve.py:22: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the functions are moved. This module will be removed in 0.20
+  DeprecationWarning)
+pca_cifar_10.py:23: UserWarning: 
+This call to matplotlib.use() has no effect because the backend has already
+been chosen; matplotlib.use() must be called *before* pylab, matplotlib.pyplot,
+or matplotlib.backends is imported for the first time.
+
+The backend was *originally* set to 'TkAgg' by the following code:
+  File "pca_cifar_10.py", line 5, in <module>
+    import matplotlib.pyplot as plt
+  File "/usr/local/lib/python3.5/dist-packages/matplotlib/pyplot.py", line 71, in <module>
+    from matplotlib.backends import pylab_setup
+  File "/usr/local/lib/python3.5/dist-packages/matplotlib/backends/__init__.py", line 16, in <module>
+    line for line in traceback.format_stack()
+
+
+  matplotlib.use('Agg')

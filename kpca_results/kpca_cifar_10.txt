@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "kpca_cifar_10.py", line 113, in <module>
+    main()
+  File "kpca_cifar_10.py", line 93, in main
+    xtrain,labels,filenames,label_names = get_cifar()
+  File "kpca_cifar_10.py", line 27, in get_cifar
+    data_filenames = glob.glob(cifar_path + '/' + train_names + '*')
+NameError: name 'glob' is not defined

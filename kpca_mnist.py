@@ -1,12 +1,22 @@
 import numpy as np
 import pandas as pd 
+import os
+import sys
+import time
+import glob
+import datetime
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import matplotlib
 
 import time
 from sklearn.decomposition import PCA, KernelPCA
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.datasets import fetch_mldata
 from sklearn import model_selection
 
