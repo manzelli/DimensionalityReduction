@@ -1,10 +1,38 @@
-[b'airplane' b'automobile' b'bird' b'cat' b'deer' b'dog' b'frog' b'horse'
- b'ship' b'truck']
-done in 12.457s
-Fitting 2 folds for each of 64 candidates, totalling 128 fits
-/usr/local/lib/python3.5/dist-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
-  "This module will be removed in 0.20.", DeprecationWarning)
-/usr/local/lib/python3.5/dist-packages/sklearn/grid_search.py:42: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. This module will be removed in 0.20.
-  DeprecationWarning)
-/usr/local/lib/python3.5/dist-packages/sklearn/learning_curve.py:22: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the functions are moved. This module will be removed in 0.20
-  DeprecationWarning)
+(60000, 3072)
+done in 17.538s
+Fitting 2 folds for each of 1 candidates, totalling 2 fits
+
+Best parameters set:
+{'C': 10, 'gamma': 0.01, 'kernel': 'rbf'}
+
+Confusion matrix:
+Labels: [, 0, ,,  , 1, ,,  , 2, ,,  , 3, ,,  , 4, ,,  , 5, ,,  , 6, ,,  , 7, ,,  , 8, ,,  , 9, ]
+
+[[731  44  59  31  36  21  28  32 171  52]
+ [ 59 779  23  41  17  16  26  24  72 195]
+ [109  22 455  98 185  92 119  60  25  22]
+ [ 45  24 111 460  75 187 155  87  26  44]
+ [ 79  26 146  61 560  43 153  83  31  25]
+ [ 32  21 104 241  89 478  94  71  21  24]
+ [ 23  32 117  81 131  45 738  28  12  16]
+ [ 44  19  59  69 123  80  34 665  22  44]
+ [122  85  28  29  20  17  10  17 813  63]
+ [ 53 195  19  46  22  19  32  38  75 675]]
+
+Classification report (per label):
+             precision    recall  f1-score   support
+
+          0       0.56      0.61      0.58      1205
+          1       0.62      0.62      0.62      1252
+          2       0.41      0.38      0.39      1187
+          3       0.40      0.38      0.39      1214
+          4       0.45      0.46      0.45      1207
+          5       0.48      0.41      0.44      1175
+          6       0.53      0.60      0.57      1223
+          7       0.60      0.57      0.59      1159
+          8       0.64      0.68      0.66      1204
+          9       0.58      0.57      0.58      1174
+
+avg / total       0.53      0.53      0.53     12000
+
+SMcc61764910244d55aceeba2efc36f5a3

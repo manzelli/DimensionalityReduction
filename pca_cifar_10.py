@@ -34,8 +34,8 @@ def svm_classify(features, labels, printout=True):
 
 	best_params = {
 		"kernel": ["rbf"],
-		"C"		: [1],
-		"gamma" : [0.1]
+		"C"		: [10],
+		"gamma" : [0.01]
 	}
 
 	kernel_params = {"kernel": ["rbf"],"C": [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
@@ -44,19 +44,19 @@ def svm_classify(features, labels, printout=True):
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = GridSearchCV(classifier, kernel_params, cv=2, n_jobs=36, verbose=3)
+	clf = GridSearchCV(classifier, best_params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
-	scores = [x[1] for x in clf.grid_scores_]
-	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
+	#scores = [x[1] for x in clf.grid_scores_]
+	#scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
 	
-	plt.figure()
-	for ind, i in enumerate(kernel_params["C"]):
-		plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = 'C: ' + str(i))
-	plt.legend()
-	plt.xlabel('Log-scaled Gamma')
-	plt.ylabel('Mean Score')
-	plt.savefig('./pca_results/gridsearch_rbf_pca_cifar_10.png')
+	#plt.figure()
+	#for ind, i in enumerate(kernel_params["C"]):
+		#plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = 'C: ' + str(i))
+	#plt.legend()
+	#plt.xlabel('Log-scaled Gamma')
+	#plt.ylabel('Mean Score')
+	#plt.savefig('./pca_results/gridsearch_rbf_pca_cifar_10.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -111,12 +111,10 @@ def main():
     plt.savefig('./pca_results/pca_cifar_10.png')
     svm_classify(xtrain_pca,ytrain)
 
-    message = client.messages.create(body = "Hello Good News! Your KPCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
+    message = client.messages.create(body = "Hello Good News! Your PCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
     print(message.sid)
 
 if __name__ == '__main__':
     main()
-
-
 
 
