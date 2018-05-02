@@ -1,4 +1,4 @@
-import numpy as numpy
+import numpy as np
 import pandas as pd 
 
 import matplotlib
@@ -20,7 +20,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from cifar_10 import *
-
 import math
 
 def svm_classify(features, labels, printout=True):
@@ -34,34 +33,25 @@ def svm_classify(features, labels, printout=True):
 		"gamma" : [0.1]
 	}
 
-	params = [
-		{
-			"kernel": ["linear"],
-			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		},
-		{
-			"kernel": ["rbf"],
-			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
-			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		}
-	]
+	kernel_params = {"kernel": ["rbf"],"C": [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
 
 	# Turn off probability estimation, set decision function to One Versus One
 
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3)
+	clf = model_selection.GridSearchCV(classifier, kernel_params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
 	scores = [x[1] for x in clf.grid_scores_]
-	scores = np.array(scores).reshape(len(params[0]["C"]))
+	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
 	
-	for ind in enumerate(params[0]["C"]):
-                plt.plot(params[0]["C"], scores[ind])
-	plt.xlabel('C')
+	plt.figure()
+	for ind, i in enumerate(kernel_params["C"]):
+		plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = 'C: ' + str(i))
+	plt.legend()
+	plt.xlabel('Log-scaled Gamma')
 	plt.ylabel('Mean Score')
-	plt.savefig('./pca_results/GridSearch_pca_cifar_10.png')
 	
 	scores = [x[1] for x in clf.grid_scores_]
 	scores = np.array(scores).reshape(len(params[1]["C"]),len(params[1]["gamma"]))
@@ -93,15 +83,37 @@ def main():
     xtrain,ytrain,filenames,label_names = get_cifar()
     print(label_names)
 
-    n_components = 16
+    n_components = 36
     time_start = time.time()
     pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
-    time_end = time.time()
-    print("done in %0.3fs" % (time.time() - time_start))
-    pca.explained_variance_ratio_.sum()
-    
+
     xtrain_pca = pca.transform(xtrain)
-    train = pd.DataFrame(xtrain)
+    xtrain_inv_proj = pca.inverse_transform(xtrain_pca)
+    print(xtrain_inv_proj.shape)
+
+    print("done in %0.3fs" % (time.time() - time_start))
+    time_end = time.time()
+
+    n = 10  # how many digits we will display
+    plt.figure(figsize=(20, 4))
+    for i in range(n):
+    # display original
+    	ax = plt.subplot(2, n, i + 1)
+    	img = xtrain[i,0:1024]
+    	plt.imshow(np.reshape(img,(32,32)))
+    	plt.gray()
+    	ax.get_xaxis().set_visible(False)
+    	ax.get_yaxis().set_visible(False)
+
+    	ax = plt.subplot(2, n, i + 1 + n)
+    	img = xtrain_inv_proj[i,0:1024]
+    	plt.imshow(np.reshape(img,(32,32)))
+    	plt.gray()
+    	ax.get_xaxis().set_visible(False)
+    	ax.get_yaxis().set_visible(False)
+    	plt.show()
+
+    plt.savefig('./pca_results/pca_cifar_10.png')
 
     svm_classify(xtrain_pca,ytrain)
 
