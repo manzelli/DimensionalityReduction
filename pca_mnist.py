@@ -91,7 +91,6 @@ def svm_classify(features, labels, printout=True):
 	plt.legend()
 	plt.xlabel('Gamma')
 	plt.ylabel('Mean Score')
-	plt.savefig('./pca_results/GridSearch_rbf_pca_mnist.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -132,7 +131,7 @@ def main():
     plot_slice(pd.DataFrame(data=reducedtrain[0:12]), size_w=4, size_h=4, labels=True)
     plt.savefig('./pca_results/pca_mnist.png')
     svm_classify(xtrain_pca,ytrain, printout = True)
-
+    plt.savefig('./pca_results/gridsearch_rbf_pca_mnist.png')
 
 if __name__ == '__main__':
     main()
