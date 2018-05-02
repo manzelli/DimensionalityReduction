@@ -29,7 +29,7 @@ auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
 client = Client(account_sid,auth_token)
 
 def svm_classify(features, labels, printout=True):
-	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
+	train_feat, test_feat, train_lbl, test_lbl = train_test_split(features, labels, test_size=0.2)
 
 	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
@@ -42,19 +42,17 @@ def svm_classify(features, labels, printout=True):
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = GridSearchCV(classifier, best_params, cv=2, n_jobs=72, verbose=3)
+	clf = GridSearchCV(classifier, kernel_params, cv=2, n_jobs=72, verbose=3)
 	clf.fit(train_feat, train_lbl)
-
-    scores = [x[1] for x in clf.grid_scores_]
-    scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
-
-    plt.figure()
-    for ind, i in enumerate(kernel_params["C"]):
-        plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = "C: " + str(i))
-    plt.legend()
-    plt.xlabel('Log-scaled Gamma')
-    plt.ylabel('Mean Score')
-    plt.savefig('./kpca_results/gridsearch_rbf_kpca_mnist.png')
+	scores = [x[1] for x in clf.grid_scores_]
+	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
+	plt.figure()
+	for ind, i in enumerate(kernel_params["C"]):
+		plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = "C: " + str(i))
+	plt.legend()
+	plt.xlabel('Log-scaled Gamma')
+	plt.ylabel('Mean Score')
+	plt.savefig('./kpca_results/gridsearch_rbf_kpca_mnist.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -81,11 +79,11 @@ def main():
 
     n_components = 16
     time_start = time.time()
-    kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf')
+    kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf',eigen_solver = 'arpack',n_jobs=-1)
     xtrain_kpca = kpca.fit_transform(xtrain)
     time_end = time.time()
     print("done in %0.3fs" % (time.time() - time_start))
-    xtrain_inv_proj = pca.inverse_transform(xtrain_kpca)
+    xtrain_inv_proj = kpca.inverse_transform(xtrain_kpca)
 
     n = 10
     plt.figure(figsize=(20,4))
@@ -98,7 +96,7 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
-        ax = plt.subplot(2,n,i+1,n)
+        ax = plt.subplot(2,n,i+1+n)
         img = xtrain_inv_proj[index]
         plt.imshow(np.reshape(img,(28,28)))
         plt.gray()

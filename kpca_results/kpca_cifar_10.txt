@@ -1,8 +1,24 @@
+/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+  "This module will be removed in 0.20.", DeprecationWarning)
+/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/grid_search.py:42: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. This module will be removed in 0.20.
+  DeprecationWarning)
+/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/learning_curve.py:22: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the functions are moved. This module will be removed in 0.20
+  DeprecationWarning)
 Traceback (most recent call last):
-  File "kpca_cifar_10.py", line 113, in <module>
+  File "kpca_cifar_10.py", line 108, in <module>
     main()
-  File "kpca_cifar_10.py", line 93, in main
-    xtrain,labels,filenames,label_names = get_cifar()
-  File "kpca_cifar_10.py", line 27, in get_cifar
-    data_filenames = glob.glob(cifar_path + '/' + train_names + '*')
-NameError: name 'glob' is not defined
+  File "kpca_cifar_10.py", line 80, in main
+    xtrain_kpca = kpca.fit_transform(xtrain);
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/decomposition/kernel_pca.py", line 262, in fit_transform
+    self.fit(X, **params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/decomposition/kernel_pca.py", line 239, in fit
+    self._fit_transform(K)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/decomposition/kernel_pca.py", line 171, in _fit_transform
+    K = self._centerer.fit_transform(K)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/base.py", line 517, in fit_transform
+    return self.fit(X, **fit_params).transform(X)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/preprocessing/data.py", line 1713, in transform
+    K = check_array(K, copy=copy, dtype=FLOAT_DTYPES)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/sklearn/utils/validation.py", line 444, in check_array
+    array = np.array(array, dtype=dtype, order=order, copy=copy)
+MemoryError
