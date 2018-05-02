@@ -91,7 +91,6 @@ def main():
     plt.figure(figsize=(20,4))
     for i in range(n):
         index = random.randint(1,60000)
-        print(index)
         ax = plt.subplot(2, n, i + 1)
         img = xtrain[index]
         plt.imshow(np.reshape(img,(28,28)))
@@ -99,8 +98,14 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
-    plt.savefig('./kpca_results/kpca_mnist.png')
+        ax = plt.subplot(2,n,i+1,n)
+        img = xtrain_inv_proj[index]
+        plt.imshow(np.reshape(img,(28,28)))
+        plt.gray()
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
 
+    plt.savefig('./kpca_results/kpca_mnist.png')
     svm_classify(xtrain_kpca,ytrain)
 
     message = client.messages.create(body = "Hello Good News! Your KPCA MNIST is done!",from_="+19733213685",to="+19173707991")

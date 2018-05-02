@@ -53,6 +53,7 @@ def svm_classify(features, labels, printout=True):
 	plt.legend()
 	plt.xlabel('Log-scaled Gamma')
 	plt.ylabel('Mean Score')
+	plt.savefig('./kpca_results/gridsearch_rbf_kpca_cifar_10.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -80,6 +81,7 @@ def main():
         xtrain_kpca = kpca.fit_transform(xtrain);
         time_end = time.time()
         print("done in %0.3fs" % (time.time() - time_start))
+        xtrain_inv_proj = kpca.inverse_transform(xtrain_kpca)
 
         n = 10
         plt.figure(figsize=(20,4))
