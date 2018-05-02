@@ -26,47 +26,6 @@ account_sid = 'AC023932c0bf9cd98ededdcd5142032db0'
 auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
 client = Client(account_sid,auth_token)
 
-def plot_number(row, w=28, h=28, labels=True):
-    if labels:
-        # the first column contains the label
-        try:
-            label = row['labels']
-        except:
-            label = row[0]
-        # The rest of columns are pixels
-        pixels = row[1:]
-    else:
-        label = ''
-        # The rest of columns are pixels
-        pixels = row[0:]
-        
-
-    # Make those columns into a array of 8-bits pixels
-    # This array will be of 1D with length 784
-    # The pixel intensity values are integers from 0 to 255
-    pixels = 255-np.array(pixels, dtype='uint8')
-    plt.figure()
-    # Reshape the array into 28 x 28 array (2-dimensional array)
-    pixels = pixels.reshape((w, h))
-
-    # Plot
-    if labels:
-        plt.title('Label is {label}'.format(label=label))
-    plt.imshow(pixels, cmap='gray')
-
-
-def plot_slice(rows, size_w=28, size_h=28, labels=True):
-    num = rows.shape[0]
-    w = 4
-    h = math.ceil(num / w)
-    fig, plots = plt.subplots(h, w)
-    fig.tight_layout()
-
-    for n in range(0, num):
-        s = plt.subplot(h, w, n+1)
-        s.set_xticks(())
-        s.set_yticks(())
-        plot_number(rows.ix[n], size_w, size_h, labels)
 
 def svm_classify(features, labels, printout=True):
     train_feat, test_feat, train_lbl, test_lbl = train_test_split(features, labels, test_size=0.2)
@@ -153,7 +112,7 @@ def main():
         plt.gray()
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
-        plt.show()
+
     plt.savefig('./pca_results/pca_mnist.png')
 
     svm_classify(xtrain_pca,ytrain, printout = True)

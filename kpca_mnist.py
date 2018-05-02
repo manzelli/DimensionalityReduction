@@ -1,101 +1,60 @@
 import numpy as np
 import pandas as pd 
+import numpy as np
+import pandas as pd
 import os
 import sys
 import time
 import glob
 import datetime
-
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
 import time
+import random
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.datasets import fetch_mldata
-from sklearn import model_selection
 
 import math
+from twilio.rest import Client
 
-def plot_number(row, w=28, h=28, labels=True):
-    if labels:
-        # the first column contains the label
-        try:
-            label = row['labels']
-        except:
-            label = row[0]
-        # The rest of columns are pixels
-        pixels = row[1:]
-    else:
-        label = ''
-        # The rest of columns are pixels
-        pixels = row[0:]
-        
-
-    # Make those columns into a array of 8-bits pixels
-    # This array will be of 1D with length 784
-    # The pixel intensity values are integers from 0 to 255
-    pixels = 255-np.array(pixels, dtype='uint8')
-
-    # Reshape the array into 28 x 28 array (2-dimensional array)
-    pixels = pixels.reshape((w, h))
-
-    # Plot
-    if labels:
-        plt.title('Label is {label}'.format(label=label))
-    plt.imshow(pixels, cmap='gray')
-
-
-def plot_slice(rows, size_w=28, size_h=28, labels=True):
-    num = rows.shape[0]
-    w = 4
-    h = math.ceil(num / w)
-    fig, plots = plt.subplots(h, w)
-    fig.tight_layout()
-
-    for n in range(0, num):
-        s = plt.subplot(h, w, n+1)
-        s.set_xticks(())
-        s.set_yticks(())
-        plot_number(rows.ix[n], size_w, size_h, labels)
+account_sid = 'AC023932c0bf9cd98ededdcd5142032db0'
+auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
+client = Client(account_sid,auth_token)
 
 def svm_classify(features, labels, printout=True):
 	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
 
 	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
-	best_params = [
-                {
-                        "kernel":["rbf"],
-                        "C"     :[10],
-                        "gamma" :[10]
-                        }
-                ]
+	best_params = {"kernel":["rbf"],"C":[10],"gamma" :[10]}
 	
-	params = [
-                {
-			"kernel": ["linear"],
-			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		},
-		{
-			"kernel": ["rbf"],
-			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
-			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		}
-	]
+	kernel_params = {"kernel": ["rbf"],"C": [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
 
 	# Turn off probability estimation, set decision function to One Versus One
 
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, best_params, cv=2, n_jobs=36, verbose=3)
+	clf = GridSearchCV(classifier, best_params, cv=2, n_jobs=72, verbose=3)
 	clf.fit(train_feat, train_lbl)
+
+    scores = [x[1] for x in clf.grid_scores_]
+    scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
+
+    plt.figure()
+    for ind, i in enumerate(kernel_params["C"]):
+        plt.plot(np.log10(kernel_params["gamma"]), scores[ind], label = "C: " + str(i))
+    plt.legend()
+    plt.xlabel('Log-scaled Gamma')
+    plt.ylabel('Mean Score')
+    plt.savefig('./kpca_results/gridsearch_rbf_kpca_mnist.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -115,38 +74,38 @@ def svm_classify(features, labels, printout=True):
 	return clf, y_predict
     
 def main():
-    mnisttrain = pd.read_csv('./mnistdata/train.csv')
-    xtrain = mnisttrain.drop(['label'], axis='columns', inplace=False)
-    ytrain = mnisttrain['label']
-    xtrain = xtrain / 255.0
+
+    mnisttrain = fetch_mldata('MNIST original')
+    xtrain = mnisttrain.data
+    ytrain = mnisttrain.target
 
     n_components = 16
-
     time_start = time.time()
-    kpca = KernelPCA(n_components = n_components, kernel = 'rbf')
+    kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf')
     xtrain_kpca = kpca.fit_transform(xtrain)
     time_end = time.time()
     print("done in %0.3fs" % (time.time() - time_start))
+    xtrain_inv_proj = pca.inverse_transform(xtrain_kpca)
 
-    train = pd.DataFrame(xtrain)
-    reducedtrain = pd.DataFrame(xtrain_kpca)
-    reducedtrain = reducedtrain.set_index(ytrain.index)
-    reducedtrain.insert(loc = 0, column = 'labels', value = ytrain)
-    reducedtrain.reset_index(drop=True, inplace = True)
-    plot_slice(pd.DataFrame(data=mnisttrain[0:12]), size_w=28, size_h=28, labels=True)
-    plt.savefig('./kpca_results/mnist.png')
-    plot_slice(pd.DataFrame(data=reducedtrain[0:12]), size_w=4, size_h=4, labels=True)
+    n = 10
+    plt.figure(figsize=(20,4))
+    for i in range(n):
+        index = random.randint(1,60000)
+        print(index)
+        ax = plt.subplot(2, n, i + 1)
+        img = xtrain[index]
+        plt.imshow(np.reshape(img,(28,28)))
+        plt.gray()
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+
     plt.savefig('./kpca_results/kpca_mnist.png')
-
-    import pickle
-    # obj0, obj1, obj2 are created here...
-
-    # Saving the objects:
-    with open('x_kpca.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-        pickle.dump([xtrain_kpca], f)
 
     svm_classify(xtrain_kpca,ytrain)
 
+    message = client.messages.create(body = "Hello Good News! Your KPCA MNIST is done!",from_="+19733213685",to="+19173707991")
+    print(message.sid)
+    
 if __name__ == '__main__':
     main()
 

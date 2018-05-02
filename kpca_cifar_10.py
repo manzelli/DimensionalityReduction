@@ -1,81 +1,58 @@
-import numpy as numpy
+import numpy as np
 import pandas as pd 
-import pickle
+
 import sys
 import os
+import time
 import glob 
 import numpy as np
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import matplotlib
 
-import time
+from sklearn import *
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.svm import SVC 
+from cifar_10 import *
 import math
 
-cifar_path = '/home/ubuntu/DimensionalityReduction/cifar_10'
-train_names = 'data_batch'
-test_name = 'test_batch'
-meta = 'batches.meta'
+from twilio.rest import Client
 
-def unpickle(file):
-	import pickle
-	with open(file, 'rb') as fo:
-		dict = pickle.load(fo, encoding='bytes')
-	return dict
-
-def get_cifar():
-	data_filenames = glob.glob(cifar_path + '/' + train_names + '*')
-	data_filenames.append(cifar_path + '/' + test_name)
-	first = unpickle(data_filenames[0])
-	data = first[b'data']
-	labels = np.array(first[b'labels'])
-	filenames = np.array(first[b'filenames'])
-	label_names = np.array((unpickle(cifar_path + '/' + meta))[b'label_names'])
-	data_filenames.pop(0)
-	for file in data_filenames:
-		file_dict = unpickle(file)
-		data = np.vstack((data, file_dict[b'data']))
-		labels = np.append(labels, file_dict[b'labels'], 0)
-		filenames = np.append(filenames, file_dict[b'filenames'], 0)
-	return data, labels, filenames, label_names
+account_sid = 'AC023932c0bf9cd98ededdcd5142032db0'
+auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
+client = Client(account_sid,auth_token)
 
 def svm_classify(features, labels, printout=True):
 	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
 
 	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
-	best_params = [
-                {
-                        "kernel":["rbf"],
-                        "C"     :[10],
-                        "gamma" :[10]
-                        }
-                ]
+	best_params = {"kernel":["rbf"],"C":[10],"gamma" :[10]}
 	
-	params = [
-                {
-			"kernel": ["linear"],
-			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		},
-		{
-			"kernel": ["rbf"],
-			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
-			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		}
-	]
+	kernel_params = {"kernel": ["rbf"],"C"     : [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
 
 	# Turn off probability estimation, set decision function to One Versus One
 
-	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
+	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3)
+	clf = GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
+
+	scores = [x[1] for x in clf.grid_scores_]
+	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
+
+	plt.figure()
+	for ind, i in enumerate(kernel_params["C"]):
+		plt.plot(np.log10(kernel_params["gamma"]),scores[ind], label = "C: " + str(i))
+	plt.legend()
+	plt.xlabel('Log-scaled Gamma')
+	plt.ylabel('Mean Score')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -95,24 +72,37 @@ def svm_classify(features, labels, printout=True):
 	return clf, y_predict
 
 def main():
-        xtrain,labels,filenames,label_names = get_cifar()
-        ytrain = labels
+        xtrain,ytrain,filenames,label_names = get_cifar()
 
-        n_components = 16
+        n_components = 36
         time_start = time.time()
-        kpca = KernelPCA(n_components = n_components, kernel = 'rbf')
-
-        import pickle
-        # obj0, obj1, obj2 are created here...
+        kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf')
         xtrain_kpca = kpca.fit_transform(xtrain);
         time_end = time.time()
         print("done in %0.3fs" % (time.time() - time_start))
-        # Saving the objects:
-        with open('xtrain_kpca.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([xtrain_kpca], f)
 
-        print(xtrain_kpca.shape)
+        n = 10
+        plt.figure(figsize=(20,4))
+        for i in range(n):
+        	ax = plt.subplot(2, n, i +1)
+        	img = xtrain[i,0:1024]
+        	plt.imshow(np.reshape(img,(32,32)))
+        	plt.gray()
+        	ax.get_xaxis().set_visible(False)
+        	ax.get_yaxis().set_visible(False)
+
+        	ax = plt.subplot(2,n,i+1+n)
+        	img = xtrain_inv_proj[i,0:1024]
+        	plt.imshow(np.reshape(img,(32,32)))
+        	plt.gray()
+        	ax.get_xaxis().set_visible(False)
+        	ax.get_yaxis().set_visible(False)
+
+    	plt.savefig('./kpca_results/kpca_cifar_10.png')
         svm_classify(xtrain_kpca,ytrain)
+
+        message = client.messages.create(body = "Hello Good News! Your KPCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
+        print(message.sid)
 
 if __name__ == '__main__':
         main()

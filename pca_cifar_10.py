@@ -14,7 +14,6 @@ import datetime
 
 from sklearn import *
 from sklearn.metrics import confusion_matrix, classification_report
-import time
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
@@ -42,7 +41,6 @@ def svm_classify(features, labels, printout=True):
 	kernel_params = {"kernel": ["rbf"],"C": [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
 
 	# Turn off probability estimation, set decision function to One Versus One
-
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
@@ -58,6 +56,7 @@ def svm_classify(features, labels, printout=True):
 	plt.legend()
 	plt.xlabel('Log-scaled Gamma')
 	plt.ylabel('Mean Score')
+	plt.savefig('./pca_results/gridsearch_rbf_pca_cifar_10.png')
 
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
@@ -80,7 +79,7 @@ def main():
     xtrain,ytrain,filenames,label_names = get_cifar()
 
 
-    n_components = 256
+    n_components = 36
     time_start = time.time()
     pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
 
@@ -108,12 +107,11 @@ def main():
     	plt.gray()
     	ax.get_xaxis().set_visible(False)
     	ax.get_yaxis().set_visible(False)
-    	plt.show()
-    plt.savefig('./pca_results/pca_cifar_10.png')
 
+    plt.savefig('./pca_results/pca_cifar_10.png')
     svm_classify(xtrain_pca,ytrain)
 
-    message = client.messages.create(body = "Hello Good News! Your PCA MNIST is done!",from_="+19733213685",to="+19173707991")
+    message = client.messages.create(body = "Hello Good News! Your KPCA CIFAR-10 is done!",from_="+19733213685",to="+19173707991")
     print(message.sid)
 
 if __name__ == '__main__':

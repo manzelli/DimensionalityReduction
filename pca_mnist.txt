@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "pca_mnist.py", line 22, in <module>
-    from twilio.rest import Client
-ImportError: No module named 'twilio'
