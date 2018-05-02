@@ -39,7 +39,7 @@ def plot_number(row, w=28, h=28, labels=True):
     # This array will be of 1D with length 784
     # The pixel intensity values are integers from 0 to 255
     pixels = 255-np.array(pixels, dtype='uint8')
-
+    plt.figure()
     # Reshape the array into 28 x 28 array (2-dimensional array)
     pixels = pixels.reshape((w, h))
 
@@ -86,6 +86,7 @@ def svm_classify(features, labels, printout=True):
 	scores = [x[1] for x in clf.grid_scores_]
 	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
 	
+	plt.figure()
 	for ind, i in enumerate(kernel_params["C"]):
 		plt.plot(kernel_params["gamma"], scores[ind], label = 'C: ' + str(i))
 	plt.legend()
