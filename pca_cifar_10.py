@@ -22,8 +22,14 @@ from sklearn.svm import SVC
 from cifar_10 import *
 import math
 
+from twilio.rest import Client
+
+account_sid = 'AC023932c0bf9cd98ededdcd5142032db0'
+auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
+client = Client(account_sid,auth_token)
+
 def svm_classify(features, labels, printout=True):
-	train_feat, test_feat, train_lbl, test_lbl = model_selection.train_test_split(features, labels, test_size=0.2)
+	train_feat, test_feat, train_lbl, test_lbl = train_test_split(features, labels, test_size=0.2)
 
 	g_vals = [10^ element for element in [-6, -5, -4, -3, -2, -1, 0, 1, 2]]
 
@@ -40,7 +46,7 @@ def svm_classify(features, labels, printout=True):
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, kernel_params, cv=2, n_jobs=36, verbose=3)
+	clf = GridSearchCV(classifier, kernel_params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
 
 	scores = [x[1] for x in clf.grid_scores_]
@@ -52,17 +58,7 @@ def svm_classify(features, labels, printout=True):
 	plt.legend()
 	plt.xlabel('Log-scaled Gamma')
 	plt.ylabel('Mean Score')
-	
-	scores = [x[1] for x in clf.grid_scores_]
-	scores = np.array(scores).reshape(len(params[1]["C"]),len(params[1]["gamma"]))
 
-	plt.figure()
-	for ind, i in enumerate(params[1]["C"]):
-		plt.plot(params[1]["Gamma"], scores[ind], label = 'C: ' + str(i))
-	plt.legend()
-	plt.xlabel('Gamma')
-	plt.ylabel('Mean Score')
-	plt.savefig('./pca_results/GridSearch_rbf_pca_cifar_10.png')
 	# Testing on classifier..
 	y_predict = clf.predict(test_feat)
 
@@ -82,9 +78,9 @@ def svm_classify(features, labels, printout=True):
 
 def main():
     xtrain,ytrain,filenames,label_names = get_cifar()
-    print(label_names)
 
-    n_components = 36
+
+    n_components = 256
     time_start = time.time()
     pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
 
@@ -116,6 +112,9 @@ def main():
     plt.savefig('./pca_results/pca_cifar_10.png')
 
     svm_classify(xtrain_pca,ytrain)
+
+    message = client.messages.create(body = "Hello Good News! Your PCA MNIST is done!",from_="+19733213685",to="+19173707991")
+    print(message.sid)
 
 if __name__ == '__main__':
     main()
