@@ -73,39 +73,21 @@ def svm_classify(features, labels, printout=True):
 		"gamma" : [0.1]
 	}
 
-	params = [
-		{
-			"kernel": ["linear"],
-			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		},
-		{
-			"kernel": ["rbf"],
-			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
-			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		}
-	]
+	kernel_params = {"kernel": ["rbf"],"C": [.01, .1, 1, 10, 100, 1000, 10000],"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]}
 
 	# Turn off probability estimation, set decision function to One Versus One
 
 	classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
 	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3)
+	clf = GridSearchCV(classifier, kernel_params, cv=2, n_jobs=36, verbose=3)
 	clf.fit(train_feat, train_lbl)
-	scores = [x[1] for x in clf.grid_scores_]
-	scores = np.array(scores).reshape(len(params[0]["C"]))
-	
-	for ind in enumerate(params[0]["C"]):
-		plt.plot(params[0]["C"], scores[ind]) 
-	plt.xlabel('C')
-	plt.ylabel('Mean Score')
-	plot.savefig('./pca_results/GridSearch_pca_mnist.png')
 
 	scores = [x[1] for x in clf.grid_scores_]
-	scores = np.array(scores).reshape(len(params[1]["C"]),len(params[1]["gamma"]))
+	scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
 	
-	for ind, i in enumerate(params[1]["C"]):
-		plt.plot(params[1]["Gamma"], scores[ind], label = 'C: ' + str(i))
+	for ind, i in enumerate(kernel_params["C"]):
+		plt.plot(kernel_params["gamma"], scores[ind], label = 'C: ' + str(i))
 	plt.legend()
 	plt.xlabel('Gamma')
 	plt.ylabel('Mean Score')
