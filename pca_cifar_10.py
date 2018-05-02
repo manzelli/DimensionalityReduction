@@ -56,6 +56,7 @@ def svm_classify(features, labels, printout=True):
 	scores = [x[1] for x in clf.grid_scores_]
 	scores = np.array(scores).reshape(len(params[1]["C"]),len(params[1]["gamma"]))
 
+	plt.figure()
 	for ind, i in enumerate(params[1]["C"]):
 		plt.plot(params[1]["Gamma"], scores[ind], label = 'C: ' + str(i))
 	plt.legend()
@@ -112,7 +113,6 @@ def main():
     	ax.get_xaxis().set_visible(False)
     	ax.get_yaxis().set_visible(False)
     	plt.show()
-
     plt.savefig('./pca_results/pca_cifar_10.png')
 
     svm_classify(xtrain_pca,ytrain)
