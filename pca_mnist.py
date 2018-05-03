@@ -20,12 +20,6 @@ from sklearn.svm import SVC
 from sklearn.datasets import fetch_mldata
 
 import math
-from twilio.rest import Client
-
-account_sid = 'AC023932c0bf9cd98ededdcd5142032db0'
-auth_token = 'ca12e87d77d7c1e25c0ccfc60a397ebf'
-client = Client(account_sid,auth_token)
-
 
 def svm_classify(features, labels, printout=True):
     train_feat, test_feat, train_lbl, test_lbl = train_test_split(features, labels, test_size=0.2)
@@ -77,16 +71,15 @@ def svm_classify(features, labels, printout=True):
     return clf, y_predict
 
 def main():
-    # mnisttrain = pd.read_csv('./mnistdata/train.csv')
-    # xtrain = mnisttrain.drop(['label'], axis='columns', inplace=False)
-    # ytrain = mnisttrain['label']
 
     mnisttrain = fetch_mldata('MNIST original')
     xtrain = mnisttrain.data
     ytrain = mnisttrain.target
 
+    #reduce to 16 dimensions
     n_components = 16
     time_start = time.time()
+    # obstain the first 16 eigenvectors and fit them 
     pca = PCA(n_components = n_components, svd_solver = 'randomized',whiten = True).fit(xtrain)
     time_end = time.time()
     print("done in %0.3fs" % (time.time() - time_start))
@@ -96,7 +89,7 @@ def main():
     n = 10  # how many digits we will display
     plt.figure(figsize=(20, 4))
     for i in range(n):
-    # display original
+        # display original
         index = random.randint(1,60000)
         print(index)
         ax = plt.subplot(2, n, i + 1)
@@ -106,6 +99,7 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
+        #display decoded img 
         ax = plt.subplot(2, n, i + 1 + n)
         img = xtrain_inv_proj[index]
         plt.imshow(np.reshape(img,(28,28)))
@@ -115,10 +109,9 @@ def main():
 
     plt.savefig('./pca_results/pca_mnist.png')
 
+    #classify using the reduced data 
     svm_classify(xtrain_pca,ytrain, printout = True)
 
-    message = client.messages.create(body = "Hello Good News! Your PCA MNIST is done!",from_="+19733213685",to="+19173707991")
-    print(message.sid)
 
 if __name__ == '__main__':
     main()
