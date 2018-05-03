@@ -42,7 +42,7 @@ def svm_classify(features, labels, printout=True):
         classifier = SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
 
         # 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-        clf = GridSearchCV(classifier, best_params, cv=2, n_jobs=72, verbose=3)
+        clf = GridSearchCV(classifier, kernel_params, cv=2, n_jobs=72, verbose=3)
         clf.fit(train_feat, train_lbl)
         scores = [x[1] for x in clf.grid_scores_]
         scores = np.array(scores).reshape(len(kernel_params["C"]),len(kernel_params["gamma"]))
@@ -77,8 +77,11 @@ def main():
     xtrain = mnisttrain.data
     ytrain = mnisttrain.target
 
+    # Reduce to 16 dimensions in feature 
     n_components = 16
     time_start = time.time()
+
+    # Kernel PCA on MNIST Data
     kpca = KernelPCA(n_components = n_components, fit_inverse_transform = True, kernel = 'rbf',eigen_solver = 'arpack',n_jobs=-1)
     xtrain_kpca = kpca.fit_transform(xtrain)
     time_end = time.time()
@@ -88,6 +91,7 @@ def main():
     n = 10
     plt.figure(figsize=(20,4))
     for i in range(n):
+        # display the original image 
         index = random.randint(1,60000)
         ax = plt.subplot(2, n, i + 1)
         img = xtrain[index]
@@ -96,6 +100,7 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
+        # display the decoded image 
         ax = plt.subplot(2,n,i+1+n)
         img = xtrain_inv_proj[index]
         plt.imshow(np.reshape(img,(28,28)))
@@ -103,11 +108,12 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 
+
     plt.savefig('./kpca_results/kpca_mnist.png')
+
+    #classify on svm with reduced data 
     svm_classify(xtrain_kpca,ytrain)
 
-    message = client.messages.create(body = "Hello Good News! Your KPCA MNIST is done!",from_="+19733213685",to="+19173707991")
-    print(message.sid)
     
 if __name__ == '__main__':
     main()
