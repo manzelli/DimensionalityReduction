@@ -14,28 +14,34 @@ def svm_classify(features, labels, printout=True, test_ratio=0.2):
 
 	best_params = {
 		"kernel": ["rbf"],
-		"C"		: [10],
-		"gamma" : [10]
+		"C"		: [1],
+		"gamma" : [0.1]
 	}
 
 	params = [
 		{
-			"kernel": ["linear"],
-			"C"     : [.001, .01, .1, 1, 10, 100, 1000, 10000]
-		},
-		{
 			"kernel": ["rbf"],
 			"C"     : [.01, .1, 1, 10, 100, 1000, 10000],
-			"gamma" : [.001, .01, .1, 1, 10, 100, 1000, 10000]
+			"gamma" : [.01, .1, 1, 10, 100, 1000, 10000]
 		}
 	]
 
+	params2 = {
+			"kernel": ["poly"],
+			"C"	: [1, 10, 100, 1000],
+			"degree": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+			"gamma": [.01, 0.1, 1, 10, 100],
+	}
+
+
+
+
 	# Turn off probability estimation, set decision function to One Versus One
 
-	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=72940)
+	classifier = svm.SVC(probability=False, decision_function_shape='ovo', cache_size=72940, kernel="polynomial")
 
-	# 10-fold cross validation, use 4 thread as each fold and each parameter set can train in parallel
-	clf = model_selection.GridSearchCV(classifier, params, cv=5, n_jobs=36, verbose=3)
+	# 10-fold cross validation, use multi-thread as each fold and each parameter set can train in parallel
+	clf = model_selection.GridSearchCV(classifier, params, cv=2, n_jobs=36, verbose=3,)
 	clf.fit(train_feat, train_lbl)
 
 	# Testing on classifier..
@@ -47,7 +53,6 @@ def svm_classify(features, labels, printout=True, test_ratio=0.2):
 
 		labels_sort = sorted(list(set(labels)))
 		print("\nConfusion matrix:")
-		print("Labels: {0}\n".format(", ".join(labels_sort)))
 		print(confusion_matrix(test_lbl, y_predict, labels=labels_sort))
 
 		print("\nClassification report (per label):")
