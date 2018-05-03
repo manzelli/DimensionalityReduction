@@ -1,0 +1,7 @@
+done in 1740.297s
+Traceback (most recent call last):
+  File "kpca_mnist.py", line 113, in <module>
+    main()
+  File "kpca_mnist.py", line 86, in main
+    xtrain_inv_proj = pca.inverse_transform(xtrain_kpca)
+NameError: name 'pca' is not defined

@@ -1,0 +1,4 @@
+  File "kpca_mnist.py", line 99
+    ax = plt.subplot(2,n,i+1+n)
+                              ^
+TabError: inconsistent use of tabs and spaces in indentation
