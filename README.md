@@ -1,10 +1,10 @@
-# Dimensinality Reduction for the Purpose of Classification
+# Dimensionality Reduction for the Purpose of Classification
 
 We investigate the effects of dimensionality reduction methods on multi-class classification of image data. Using four methods, namely principal component analysis, kernel principal component analysis, t-SNE, and fully-connected autoencoders, we explore the image data of reduced feature dimension output from each method. We classify this image content with one-vs-one multi-class SVMs, and evaluate performance using correct classification rate, precision, recall, and F1-score. We use the results of the multi-class SVM classification of the original data as a baseline method for comparison of evaluation of each method under investigation.
 
 ## Getting Started
 
-To have our code run successfully one needs a python 3.4+ environment with libraries & datasets downloaded & described as rub below
+To have our code run successfully one needs a python 3.4+ environment with libraries & datasets downloaded & described below.
 
 ### Installing
 
@@ -25,7 +25,7 @@ pip3 install matplotlib
 pip3 install sklearn
 pip3 install numpy
 ```
-
+Install the Multicore-TSNE library from the repo at: https://github.com/DmitryUlyanov/Multicore-TSNE 
 
 Obtaining the Datasets
 ```
